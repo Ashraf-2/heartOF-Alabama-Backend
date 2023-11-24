@@ -61,6 +61,65 @@ async function run() {
         const result = await availableFoodsCL.insertOne(newFood);
         res.send(result);
     })
+
+    //food delete by the user operation
+    app.delete('/availableFoods/:id', async(req,res) => {
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)};
+      const result = await availableFoodsCL.deleteOne(query);
+      // console.log("query id: ", query);
+      res.send(result);
+    })
+
+    //food update operation 
+    app.patch('/availableFoods/:id',async(req,res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)}
+      const options = {upsert: true};
+      const updateFood = req.body;
+
+      const food1 = {
+        $set: {
+          food_img: updateFood.food_img,
+          food_name:updateFood.food_name,
+          food_status:updateFood.food_status,
+          donator_name:updateFood.donator_name,
+          donator_email:updateFood.donator_email,
+          donator_photo:updateFood.donator_photo, 
+          food_quantity:updateFood.food_quantity, 
+          pickup_location:updateFood.pickup_location,
+          expire_date:updateFood.expire_date,
+          notes:updateFood.notes,
+        }
+      }
+
+      const result  = await availableFoodsCL.updateOne(filter,food1,options)
+      res.send(food1);
+    })
+
+    //manage food crud operation
+
+    /** 
+    app.get('/manageFoods', async(req,res)=> {
+      // console.log(req.query.email)
+      // const email = req.query.email;
+      // let query = {};
+      // if(req.query?.email){
+      //   query = {email: req.query.email};
+      // }
+      // console.log("query: ", query);
+      // const cursor = availableFoodsCL.find(query);
+      // const result = await cursor.toArray();
+      // console.log("result: ",result);
+
+
+      // const query = {
+      //   email: 'hasanashraful03@gmail.com',
+      // };
+      // const result = await availableFoodsCL.find(query).toArray()
+      res.send(result);
+    })
+    */
     
     
     
