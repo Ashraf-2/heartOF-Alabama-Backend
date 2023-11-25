@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { error } = require('console');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -54,7 +55,7 @@ async function run() {
       res.send(result);
 
     })
-    
+    //add data - food 
     app.post('/availableFoods', async(req,res)=> {
         const newFood = req.body;
         console.log(newFood);
@@ -64,15 +65,19 @@ async function run() {
 
     //food delete by the user operation
     app.delete('/availableFoods/:id', async(req,res) => {
-      const id = req.params.id;
-      const query = {_id : new ObjectId(id)};
-      const result = await availableFoodsCL.deleteOne(query);
-      // console.log("query id: ", query);
-      res.send(result);
+      try{
+        const id = req.params.id;
+        const query = {_id : new ObjectId(id)};
+        const result = await availableFoodsCL.deleteOne(query);
+        // console.log("query id: ", query);
+        res.send(result);
+      }catch{(error) => {
+        console.log(error);
+      }}
     })
 
     //food update operation 
-    app.patch('/availableFoods/:id',async(req,res) => {
+    app.put('/availableFoods/:id',async(req,res) => {
       const id = req.params.id;
       const filter = {_id: new ObjectId(id)}
       const options = {upsert: true};
@@ -94,7 +99,8 @@ async function run() {
       }
 
       const result  = await availableFoodsCL.updateOne(filter,food1,options)
-      res.send(food1);
+      console.log(result)
+      res.json(result);
     })
 
     //manage food crud operation
