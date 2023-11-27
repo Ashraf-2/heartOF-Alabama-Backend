@@ -39,7 +39,7 @@ async function run() {
     //create Database and collections
     const foodCampgaingDB = client.db("food-campagin-b8A11-DB");
     const availableFoodsCL = foodCampgaingDB.collection('available-foods');
-    
+    const foodRequestCL = foodCampgaingDB.collection('food-requests');
     
     //available foods related crud operation
     app.get('/availableFoods', async(req,res)=> {
@@ -55,6 +55,8 @@ async function run() {
       res.send(result);
 
     })
+
+
     //add data - food 
     app.post('/availableFoods', async(req,res)=> {
         const newFood = req.body;
@@ -95,12 +97,26 @@ async function run() {
           pickup_location:updateFood.pickup_location,
           expire_date:updateFood.expire_date,
           notes:updateFood.notes,
+          delivery_status: updateFood.delivery_status
         }
       }
 
       const result  = await availableFoodsCL.updateOne(filter,food1,options)
       console.log(result)
       res.json(result);
+    })
+
+    //get operation for food-request collections
+    app.get('/foodRequest', async(req,res)=> {
+      const cursor = foodRequestCL.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
+    app.post('/foodRequest', async(req,res) => {
+      const newFoodRequest = req.body;
+      console.log(newFoodRequest);
+      res.send(newFoodRequest)
     })
 
     //manage food crud operation
