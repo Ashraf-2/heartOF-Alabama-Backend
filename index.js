@@ -35,22 +35,22 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-    
+
     //create Database and collections
     const foodCampgaingDB = client.db("food-campagin-b8A11-DB");
     const availableFoodsCL = foodCampgaingDB.collection('available-foods');
     const foodRequestCL = foodCampgaingDB.collection('food-requests');
-    
+
     //available foods related crud operation
-    app.get('/availableFoods', async(req,res)=> {
-        const cursor = availableFoodsCL.find();
-        const result = await cursor.toArray();
-        res.send(result);
+    app.get('/availableFoods', async (req, res) => {
+      const cursor = availableFoodsCL.find();
+      const result = await cursor.toArray();
+      res.send(result);
     })
     //get specific food
-    app.get('/availableFoods/:id', async(req,res)=> {
+    app.get('/availableFoods/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const result = await availableFoodsCL.findOne(query);
       res.send(result);
 
@@ -58,65 +58,93 @@ async function run() {
 
 
     //add data - food 
-    app.post('/availableFoods', async(req,res)=> {
-        const newFood = req.body;
-        console.log(newFood);
-        const result = await availableFoodsCL.insertOne(newFood);
-        res.send(result);
+    app.post('/availableFoods', async (req, res) => {
+      const newFood = req.body;
+      console.log(newFood);
+      const result = await availableFoodsCL.insertOne(newFood);
+      res.send(result);
     })
 
     //food delete by the user operation
-    app.delete('/availableFoods/:id', async(req,res) => {
-      try{
+    app.delete('/availableFoods/:id', async (req, res) => {
+      try {
         const id = req.params.id;
-        const query = {_id : new ObjectId(id)};
+        const query = { _id: new ObjectId(id) };
         const result = await availableFoodsCL.deleteOne(query);
         // console.log("query id: ", query);
         res.send(result);
-      }catch{(error) => {
-        console.log(error);
-      }}
+      } catch {
+        (error) => {
+          console.log(error);
+        }
+      }
     })
 
     //food update operation 
-    app.put('/availableFoods/:id',async(req,res) => {
+    app.put('/availableFoods/:id', async (req, res) => {
       const id = req.params.id;
-      const filter = {_id: new ObjectId(id)}
-      const options = {upsert: true};
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true };
       const updateFood = req.body;
 
       const food1 = {
         $set: {
           food_img: updateFood.food_img,
-          food_name:updateFood.food_name,
-          food_status:updateFood.food_status,
-          donator_name:updateFood.donator_name,
-          donator_email:updateFood.donator_email,
-          donator_photo:updateFood.donator_photo, 
-          food_quantity:updateFood.food_quantity, 
-          pickup_location:updateFood.pickup_location,
-          expire_date:updateFood.expire_date,
-          notes:updateFood.notes,
+          food_name: updateFood.food_name,
+          food_status: updateFood.food_status,
+          donator_name: updateFood.donator_name,
+          donator_email: updateFood.donator_email,
+          donator_photo: updateFood.donator_photo,
+          food_quantity: updateFood.food_quantity,
+          pickup_location: updateFood.pickup_location,
+          expire_date: updateFood.expire_date,
+          notes: updateFood.notes,
           delivery_status: updateFood.delivery_status
         }
       }
-
-      const result  = await availableFoodsCL.updateOne(filter,food1,options)
+      console.log(food1);
+      const result = await availableFoodsCL.updateOne(filter, food1, options)
       console.log(result)
       res.json(result);
     })
 
+    //food request related CRUD operation
+
     //get operation for food-request collections
-    app.get('/foodRequest', async(req,res)=> {
+    app.get('/foodRequest', async (req, res) => {
       const cursor = foodRequestCL.find();
       const result = await cursor.toArray();
       res.send(result);
     })
 
-    app.post('/foodRequest', async(req,res) => {
-      const newFoodRequest = req.body;
-      console.log(newFoodRequest);
-      res.send(newFoodRequest)
+    //post operation for store food-request
+    app.post('/foodRequest', async (req, res) => {
+      try {
+        const newFoodRequest = req.body;
+        console.log(newFoodRequest);
+        const result = await foodRequestCL.insertOne(newFoodRequest);
+        res.send(result)
+      }
+      catch {
+        (error) => {
+          console.log(error);
+        }
+
+      }
+    })
+
+    app.delete('/foodRequest/:id', async(req, res) => {
+      try{
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)}
+        const result = await foodRequestCL.deleteOne(query);
+        res.send(result);
+      }
+      catch
+      {
+        error => console.log(error);
+
+      }
     })
 
     //manage food crud operation
@@ -142,15 +170,15 @@ async function run() {
       res.send(result);
     })
     */
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -164,11 +192,11 @@ run().catch(console.dir);
 
 
 
-app.get('/', (req,res) => {
-    res.send('Food Campagin server is running');
+app.get('/', (req, res) => {
+  res.send('Food Campagin server is running');
 })
 
 
-app.listen(port, ()=> {
-    console.log(`Food Campagin server is successfully running on port ${port}`);
+app.listen(port, () => {
+  console.log(`Food Campagin server is successfully running on port ${port}`);
 })
