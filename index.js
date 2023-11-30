@@ -117,6 +117,17 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/foodRequest/:refId', async (req, res) => {
+      try {
+        const refId = req.params.refId;
+        const result = await foodRequestCL.findOne({refId});
+        console.log(refId);
+        res.send(result)
+      } catch (error) {
+        console.log(error);
+      }
+    })
+
     //post operation for store food-request
     app.post('/foodRequest', async (req, res) => {
       try {
@@ -133,10 +144,10 @@ async function run() {
       }
     })
 
-    app.delete('/foodRequest/:id', async(req, res) => {
-      try{
+    app.delete('/foodRequest/:id', async (req, res) => {
+      try {
         const id = req.params.id;
-        const query = {_id: new ObjectId(id)}
+        const query = { _id: new ObjectId(id) }
         const result = await foodRequestCL.deleteOne(query);
         res.send(result);
       }
@@ -145,6 +156,38 @@ async function run() {
         error => console.log(error);
 
       }
+    })
+
+    app.put('/foodRequest/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true };
+      const updateFood = req.body;
+
+      const food1 = {
+        $set: {
+          refId: updateFood.refId,
+          food_name: updateFood.food_name,
+          food_status: updateFood.food_status,
+          donator_name: updateFood.donator_name,
+          donator_email: updateFood.donator_email,
+          donator_photo: updateFood.donator_photo,
+          food_quantity: updateFood.food_quantity,
+          pickup_location: updateFood.pickup_location,
+          expire_date: updateFood.expire_date,
+          notes: updateFood.notes,
+          delivery_status: updateFood.delivery_status,
+          donation_amount: updateFood.donation_amount,
+          request_date: updateFood.request_date,
+          requester_name: updateFood.requester_name,
+          requester_email: updateFood.requester_email,
+          requester_photo: updateFood.requester_photo,
+        }
+      }
+      console.log(food1);
+      const result = await foodRequestCL.updateOne(filter, food1, options)
+      console.log(result)
+      res.json(result);
     })
 
     //manage food crud operation
